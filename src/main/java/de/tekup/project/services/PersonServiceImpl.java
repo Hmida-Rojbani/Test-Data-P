@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import org.apache.tomcat.jni.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,30 +39,43 @@ public class PersonServiceImpl {
 
 	// Get Person By Id
 	public PersonEntity getPersonById(long id) {
-		
+
 		Optional<PersonEntity> opt = reposPerson.findById(id);
 		PersonEntity person = null;
-		/*if(opt.isPresent())
-			person = opt.get();
-		else
-			throw new NoSuchElementException("Person with this id is "
-					+ "not found");*/
-		person = opt.orElseThrow(()->new NoSuchElementException("Person "
-				+ "with this id is not found"));
+		/*
+		 * if(opt.isPresent()) person = opt.get(); else throw new
+		 * NoSuchElementException("Person with this id is " + "not found");
+		 */
+		person = opt.orElseThrow(() -> new NoSuchElementException("Person " + "with this id is not found"));
 		return person;
 	}
-	
-	// modify a person
+
+	// modify a person ( with Address)
 	public PersonEntity modifyPersonById(long id, PersonEntity newPerson) {
 		PersonEntity oldPerson = this.getPersonById(id);
-		if(newPerson.getName() != null)
+		if (newPerson.getName() != null)
 			oldPerson.setName(newPerson.getName());
-		if(newPerson.getDateOfBirth() != null)
+		if (newPerson.getDateOfBirth() != null)
 			oldPerson.setDateOfBirth(newPerson.getDateOfBirth());
-		if(newPerson.getAddress() != null)
-			oldPerson.setAddress(newPerson.getAddress());
+		// Update Address
+		AddressEntity newAddress = newPerson.getAddress();
+		AddressEntity oldAddress = oldPerson.getAddress();
+		if (oldAddress == null)
+			oldPerson.setAddress(newAddress);
+		else {
+			if (newAddress != null) {
+				if (newAddress.getNumber() != 0)
+					oldAddress.setNumber(newAddress.getNumber());
+				if (newAddress.getStreet() != null)
+					oldAddress.setStreet(newAddress.getStreet());
+				if (newAddress.getCity() != null)
+					oldAddress.setCity(newAddress.getCity());
+			}
+		}
+
 		return reposPerson.save(oldPerson);
 	}
+
 	// delete person
 	public PersonEntity deletePersonById(long id) {
 		PersonEntity oldPerson = this.getPersonById(id);
