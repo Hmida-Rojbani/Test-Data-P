@@ -5,5 +5,15 @@
 		"number" : 22,
 		"street": "ste.",
 		"city": "Ariana"
-	}
+	},
+    "phones": [
+    	{
+    		"number": "55555555",
+    		"operator": "Orange"
+    	},
+    	{
+    		"number": "22222222",
+    		"operator": "Oredoo"
+    	}
+    	]
 }
