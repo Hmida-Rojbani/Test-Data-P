@@ -1,5 +1,9 @@
 {
 	"name": "person1-new",
 	"dateOfBirth": "2020-10-19",
-	"address": "Ariana"
+	"address": {
+		"number" : 22,
+		"street": "ste.",
+		"city": "Ariana"
+	}
 }

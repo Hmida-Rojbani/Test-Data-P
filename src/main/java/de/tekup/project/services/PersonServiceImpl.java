@@ -4,37 +4,44 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.apache.tomcat.jni.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import de.tekup.project.models.AddressEntity;
 import de.tekup.project.models.PersonEntity;
+import de.tekup.project.repositories.AddressRepository;
 import de.tekup.project.repositories.PersonRepository;
 
 @Service
 public class PersonServiceImpl {
 
-	private PersonRepository repository;
+	private PersonRepository reposPerson;
+	private AddressRepository reposAddress;
 
 	@Autowired
-	public PersonServiceImpl(PersonRepository repository) {
+	public PersonServiceImpl(PersonRepository repository, AddressRepository reposAddress) {
 		super();
-		this.repository = repository;
+		this.reposPerson = repository;
+		this.reposAddress = reposAddress;
 	}
 
 	// Retrieve all instance in database
 	public List<PersonEntity> getAllEntities() {
-		return repository.findAll();
+		return reposPerson.findAll();
 	}
 
 	// Save a request into Database
 	public PersonEntity savePerson(PersonEntity person) {
-		return repository.save(person);
+		AddressEntity address = person.getAddress();
+		reposAddress.save(address);
+		return reposPerson.save(person);
 	}
 
 	// Get Person By Id
 	public PersonEntity getPersonById(long id) {
 		
-		Optional<PersonEntity> opt = repository.findById(id);
+		Optional<PersonEntity> opt = reposPerson.findById(id);
 		PersonEntity person = null;
 		/*if(opt.isPresent())
 			person = opt.get();
@@ -55,12 +62,12 @@ public class PersonServiceImpl {
 			oldPerson.setDateOfBirth(newPerson.getDateOfBirth());
 		if(newPerson.getAddress() != null)
 			oldPerson.setAddress(newPerson.getAddress());
-		return repository.save(oldPerson);
+		return reposPerson.save(oldPerson);
 	}
 	// delete person
 	public PersonEntity deletePersonById(long id) {
 		PersonEntity oldPerson = this.getPersonById(id);
-		repository.deleteById(id);
+		reposPerson.deleteById(id);
 		return oldPerson;
 	}
 
