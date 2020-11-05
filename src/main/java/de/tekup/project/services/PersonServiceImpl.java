@@ -45,5 +45,23 @@ public class PersonServiceImpl {
 				+ "with this id is not found"));
 		return person;
 	}
+	
+	// modify a person
+	public PersonEntity modifyPersonById(long id, PersonEntity newPerson) {
+		PersonEntity oldPerson = this.getPersonById(id);
+		if(newPerson.getName() != null)
+			oldPerson.setName(newPerson.getName());
+		if(newPerson.getDateOfBirth() != null)
+			oldPerson.setDateOfBirth(newPerson.getDateOfBirth());
+		if(newPerson.getAddress() != null)
+			oldPerson.setAddress(newPerson.getAddress());
+		return repository.save(oldPerson);
+	}
+	// delete person
+	public PersonEntity deletePersonById(long id) {
+		PersonEntity oldPerson = this.getPersonById(id);
+		repository.deleteById(id);
+		return oldPerson;
+	}
 
 }
