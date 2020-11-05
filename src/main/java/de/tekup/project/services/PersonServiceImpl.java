@@ -19,8 +19,14 @@ public class PersonServiceImpl {
 		this.repository = repository;
 	}
 	
+	// Retrieve all instance in database
 	public List<PersonEntity> getAllEntities(){
 		return repository.findAll();
+	}
+	
+	// Save a request into Database 
+	public PersonEntity savePerson(PersonEntity person) {
+		return repository.save(person);
 	}
 
 }
