@@ -9,20 +9,25 @@ import org.springframework.stereotype.Service;
 
 import de.tekup.project.models.AddressEntity;
 import de.tekup.project.models.PersonEntity;
+import de.tekup.project.models.TelephoneNumberEntity;
 import de.tekup.project.repositories.AddressRepository;
 import de.tekup.project.repositories.PersonRepository;
+import de.tekup.project.repositories.TelephoneNumberRepository;
 
 @Service
 public class PersonServiceImpl {
 
 	private PersonRepository reposPerson;
 	private AddressRepository reposAddress;
+	private TelephoneNumberRepository reposPhone;
 
 	@Autowired
-	public PersonServiceImpl(PersonRepository repository, AddressRepository reposAddress) {
+	public PersonServiceImpl(PersonRepository repository, 
+			AddressRepository reposAddress, TelephoneNumberRepository reposPhone) {
 		super();
 		this.reposPerson = repository;
 		this.reposAddress = reposAddress;
+		this.reposPhone = reposPhone;
 	}
 
 	// Retrieve all instance in database
@@ -31,10 +36,24 @@ public class PersonServiceImpl {
 	}
 
 	// Save a request into Database
-	public PersonEntity savePerson(PersonEntity person) {
-		AddressEntity address = person.getAddress();
+	public PersonEntity savePerson(PersonEntity personRequest) {
+		// save Address
+		AddressEntity address = personRequest.getAddress();
 		reposAddress.save(address);
-		return reposPerson.save(person);
+		// save Person
+		PersonEntity personInBase = reposPerson.save(personRequest);
+		// save Phones
+		List<TelephoneNumberEntity> phones = personRequest.getPhones();
+		/* One Way
+		 * for (TelephoneNumberEntity phone : phones) { 
+			phone.setPerson(personInBase);
+			reposPhone.save(phone);
+		}
+		*/
+		// second Way
+		phones.forEach(phone -> phone.setPerson(personInBase));
+		reposPhone.saveAll(phones);
+		return personInBase;
 	}
 
 	// Get Person By Id
@@ -72,6 +91,8 @@ public class PersonServiceImpl {
 					oldAddress.setCity(newAddress.getCity());
 			}
 		}
+		
+		// TODO Update phone
 
 		return reposPerson.save(oldPerson);
 	}
