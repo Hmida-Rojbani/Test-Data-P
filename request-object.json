@@ -15,5 +15,15 @@
     		"number": "22222222",
     		"operator": "Oredoo"
     	}
-    	]
+    	],
+	"games": [
+		{
+			"title": "Fifa2020",
+			"type": "football"
+		},
+		{
+			"title": "POP",
+			"type": "advanture"
+		}
+	]
 }
