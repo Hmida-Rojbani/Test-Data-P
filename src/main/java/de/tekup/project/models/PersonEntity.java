@@ -16,11 +16,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 
 @Entity
 @Data
 @Table(name = "person")
+@EqualsAndHashCode(of = {"name","dateOfBirth"})
 public class PersonEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,9 +1,13 @@
 package de.tekup.project.services;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -160,7 +164,35 @@ public class PersonServiceImpl {
 	
 	// All person with a given operator
 	public List<PersonEntity> getAllByOperator(String operator){
-		return null;
+		// version 1 simple
+		/*
+		Set<PersonEntity> persons = new HashSet<>();
+		List<TelephoneNumberEntity> phones = reposPhone.findAll();
+		
+		for (TelephoneNumberEntity phone : phones) {
+			if(phone.getOperator().equalsIgnoreCase(operator)) {
+				// persons is List
+				// if(! persons.contains(phone.getPerson())) {
+				//	persons.add(phone.getPerson());
+				//}
+				 
+				persons.add(phone.getPerson());
+			}
+		}	
+		
+		return new ArrayList<>(persons);
+		*/
+		// Version 2 ( Java 8)
+		List<PersonEntity> persons = 
+				reposPhone.findAll()
+						.stream()
+						.filter(phone -> phone.getOperator().equalsIgnoreCase(operator))
+						.map(phone -> phone.getPerson())
+						.distinct()
+						.collect(Collectors.toList());
+												
+		
+		return persons ;
 	}
 	
 	// Average age of all Persons
