@@ -1,5 +1,6 @@
 package de.tekup.project.services;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -8,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import de.tekup.project.models.AddressEntity;
+import de.tekup.project.models.GamesEntity;
 import de.tekup.project.models.PersonEntity;
 import de.tekup.project.models.TelephoneNumberEntity;
 import de.tekup.project.repositories.AddressRepository;
+import de.tekup.project.repositories.GameRepository;
 import de.tekup.project.repositories.PersonRepository;
 import de.tekup.project.repositories.TelephoneNumberRepository;
 
@@ -20,14 +23,16 @@ public class PersonServiceImpl {
 	private PersonRepository reposPerson;
 	private AddressRepository reposAddress;
 	private TelephoneNumberRepository reposPhone;
+	private GameRepository reposGame;
 
 	@Autowired
-	public PersonServiceImpl(PersonRepository repository, 
-			AddressRepository reposAddress, TelephoneNumberRepository reposPhone) {
+	public PersonServiceImpl(PersonRepository repository, AddressRepository reposAddress,
+			TelephoneNumberRepository reposPhone, GameRepository reposGame) {
 		super();
 		this.reposPerson = repository;
 		this.reposAddress = reposAddress;
 		this.reposPhone = reposPhone;
+		this.reposGame = reposGame;
 	}
 
 	// Retrieve all instance in database
@@ -44,16 +49,33 @@ public class PersonServiceImpl {
 		PersonEntity personInBase = reposPerson.save(personRequest);
 		// save Phones
 		List<TelephoneNumberEntity> phones = personRequest.getPhones();
-		/* One Way
-		 * for (TelephoneNumberEntity phone : phones) { 
-			phone.setPerson(personInBase);
-			reposPhone.save(phone);
-		}
-		*/
+		/*
+		 * One Way for (TelephoneNumberEntity phone : phones) {
+		 * phone.setPerson(personInBase); reposPhone.save(phone); }
+		 */
 		// second Way
 		phones.forEach(phone -> phone.setPerson(personInBase));
 		reposPhone.saveAll(phones);
+
+		// TODO save Games;
+		List<GamesEntity> games = personRequest.getGames();
+		List<GamesEntity> gamesInBase = reposGame.findAll();
+		for (GamesEntity game : games) {
+			if(gamesInBase.contains(game)) {
+				int indexOfGameInList = gamesInBase.indexOf(game);
+				GamesEntity gameInbase = gamesInBase.get(indexOfGameInList);
+				// add the new person to the existing list of persons
+				gameInbase.getPersons().add(personInBase);
+				reposGame.save(gameInbase);
+			}else {
+				// save game for the first time
+				game.setPersons(Arrays.asList(personInBase));
+				reposGame.save(game);
+			}
+		}
+
 		return personInBase;
+
 	}
 
 	// Get Person By Id
@@ -91,17 +113,17 @@ public class PersonServiceImpl {
 					oldAddress.setCity(newAddress.getCity());
 			}
 		}
-		
+
 		// TODO Update phone
 		List<TelephoneNumberEntity> oldPhones = oldPerson.getPhones();
 		List<TelephoneNumberEntity> newPhones = newPerson.getPhones();
-		if(newPhones != null) {
+		if (newPhones != null) {
 			for (TelephoneNumberEntity newPhone : newPhones) {
 				for (TelephoneNumberEntity oldPhone : oldPhones) {
-					if(newPhone.getId() == oldPhone.getId()) {
-						if(newPhone.getNumber() != null)
+					if (newPhone.getId() == oldPhone.getId()) {
+						if (newPhone.getNumber() != null)
 							oldPhone.setNumber(newPhone.getNumber());
-						if(newPhone.getOperator() != null)
+						if (newPhone.getOperator() != null)
 							oldPhone.setOperator(newPhone.getOperator());
 					}
 				}
