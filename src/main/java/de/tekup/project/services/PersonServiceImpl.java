@@ -93,6 +93,7 @@ public class PersonServiceImpl {
 
 	// modify a person ( with Address)
 	public PersonEntity modifyPersonById(long id, PersonEntity newPerson) {
+		// There is a better way (3 points DS Bonus)
 		PersonEntity oldPerson = this.getPersonById(id);
 		if (newPerson.getName() != null)
 			oldPerson.setName(newPerson.getName());
@@ -114,7 +115,7 @@ public class PersonServiceImpl {
 			}
 		}
 
-		// TODO Update phone
+		//  Update phone
 		List<TelephoneNumberEntity> oldPhones = oldPerson.getPhones();
 		List<TelephoneNumberEntity> newPhones = newPerson.getPhones();
 		if (newPhones != null) {
@@ -130,6 +131,23 @@ public class PersonServiceImpl {
 			}
 		}
 
+		// TODO Update Games
+		List<GamesEntity> oldGames = oldPerson.getGames();
+		List<GamesEntity> newGames = newPerson.getGames();
+		if(newGames != null) {
+			for (GamesEntity newGame : newGames) {
+				for (GamesEntity oldGame : oldGames) {
+					if(newGame.getId()==oldGame.getId()) {
+						if(newGame.getTitle() != null)
+							oldGame.setTitle(newGame.getTitle());
+						if(newGame.getType() != null)
+							oldGame.setType(newGame.getType());
+					}
+				}
+			}
+		}
+		
+		
 		return reposPerson.save(oldPerson);
 	}
 
