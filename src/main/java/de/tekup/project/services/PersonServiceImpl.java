@@ -93,6 +93,20 @@ public class PersonServiceImpl {
 		}
 		
 		// TODO Update phone
+		List<TelephoneNumberEntity> oldPhones = oldPerson.getPhones();
+		List<TelephoneNumberEntity> newPhones = newPerson.getPhones();
+		if(newPhones != null) {
+			for (TelephoneNumberEntity newPhone : newPhones) {
+				for (TelephoneNumberEntity oldPhone : oldPhones) {
+					if(newPhone.getId() == oldPhone.getId()) {
+						if(newPhone.getNumber() != null)
+							oldPhone.setNumber(newPhone.getNumber());
+						if(newPhone.getOperator() != null)
+							oldPhone.setOperator(newPhone.getOperator());
+					}
+				}
+			}
+		}
 
 		return reposPerson.save(oldPerson);
 	}
