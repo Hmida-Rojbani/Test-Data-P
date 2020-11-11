@@ -14,5 +14,12 @@
             "id": 2,
             "operator": "Ooredoo"
         }
-    ]
+    ],
+    "games": [
+		{
+			"id" : 1,
+			"title": "Fifa2021"
+		}
+	]
+
 }
