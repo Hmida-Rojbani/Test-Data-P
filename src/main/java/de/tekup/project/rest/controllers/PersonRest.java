@@ -56,6 +56,11 @@ public class PersonRest {
 		return service.deletePersonById(id);
 	}
 	
+	@GetMapping("/operator/{opt}")
+	public List<PersonEntity> getPersonsByOperator(@PathVariable("opt") String operator){
+		return service.getAllByOperator(operator);
+	}
+	
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
 		return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);

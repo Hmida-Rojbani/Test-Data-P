@@ -157,5 +157,19 @@ public class PersonServiceImpl {
 		reposPerson.deleteById(id);
 		return oldPerson;
 	}
+	
+	// All person with a given operator
+	public List<PersonEntity> getAllByOperator(String operator){
+		return null;
+	}
+	
+	// Average age of all Persons
+	
+	//Persons who play the type of game the most played.
+	
+
+	// Display the games type and the number of games for each type;
+	
+	// return a person by name 
 
 }
