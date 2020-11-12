@@ -1,4 +1,4 @@
-package de.tekup.project.models;
+package de.tekup.project.data.models;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,12 +17,14 @@ import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 
 @Entity
 @Data
 @Table(name = "person")
 @EqualsAndHashCode(of = {"name","dateOfBirth"})
+@ToString(of = {"id","name","dateOfBirth"})
 public class PersonEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

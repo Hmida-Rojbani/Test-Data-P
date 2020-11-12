@@ -1,4 +1,4 @@
-package de.tekup.project.models;
+package de.tekup.project.data.models;
 
 import java.util.List;
 

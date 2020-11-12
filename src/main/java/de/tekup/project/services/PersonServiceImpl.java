@@ -1,25 +1,31 @@
 package de.tekup.project.services;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.hql.internal.ast.ParseErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.tekup.project.models.AddressEntity;
-import de.tekup.project.models.GamesEntity;
-import de.tekup.project.models.PersonEntity;
-import de.tekup.project.models.TelephoneNumberEntity;
-import de.tekup.project.repositories.AddressRepository;
-import de.tekup.project.repositories.GameRepository;
-import de.tekup.project.repositories.PersonRepository;
-import de.tekup.project.repositories.TelephoneNumberRepository;
+import de.tekup.project.data.models.AddressEntity;
+import de.tekup.project.data.models.GamesEntity;
+import de.tekup.project.data.models.PersonEntity;
+import de.tekup.project.data.models.TelephoneNumberEntity;
+import de.tekup.project.data.repositories.AddressRepository;
+import de.tekup.project.data.repositories.GameRepository;
+import de.tekup.project.data.repositories.PersonRepository;
+import de.tekup.project.data.repositories.TelephoneNumberRepository;
 
 @Service
 public class PersonServiceImpl {
@@ -196,8 +202,46 @@ public class PersonServiceImpl {
 	}
 	
 	// Average age of all Persons
+	public double getAverageAge() {
+		List<PersonEntity> persons = reposPerson.findAll();
+		
+		LocalDate now = LocalDate.now();
+		/*double sum = 0;
+		 * for (PersonEntity person : persons) {
+			//sum += now.getYear() - person.getDateOfBirth().getYear();
+			sum += ChronoUnit.YEARS.between(person.getDateOfBirth(), now);
+		}
+		
+		return sum/persons.size();
+		*/
+		// Java 8
+		double average = persons.stream()
+				.mapToLong(p ->  ChronoUnit.YEARS.between(p.getDateOfBirth(), now))
+				.average().orElse(0);
+				
+				
+		return average;
+	}
 	
 	//Persons who play the type of game the most played.
+	public List<PersonEntity> getPersonsMostType(){
+		Map<String, Set<PersonEntity>> map = new HashMap<>();
+		List<GamesEntity> games = reposGame.findAll();
+		for (GamesEntity game : games) {
+			if (map.containsKey(game.getType())) {
+				Set<PersonEntity> personsByType =map.get(game.getType());
+				personsByType.addAll(game.getPersons());
+			} else {
+				map.put(game.getType(), new HashSet<>(game.getPersons()));
+			}
+		}
+		List<PersonEntity> persons = new ArrayList<>();
+		for (Set<PersonEntity> set : map.values()) {
+			if(persons.size() < set.size())
+				persons = new ArrayList<>(set);
+		}
+		return persons;
+	}
 	
 
 	// Display the games type and the number of games for each type;

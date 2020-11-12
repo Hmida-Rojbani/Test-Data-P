@@ -1,4 +1,4 @@
-package de.tekup.project.models;
+package de.tekup.project.data.models;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import de.tekup.project.models.PersonEntity;
+import de.tekup.project.data.models.PersonEntity;
 import de.tekup.project.services.PersonServiceImpl;
 
 @RestController
@@ -61,10 +61,25 @@ public class PersonRest {
 		return service.getAllByOperator(operator);
 	}
 	
+	@GetMapping("/average/age")
+	public double getPersonsAverageAge(){
+		return service.getAverageAge();
+	}
+	
+	@GetMapping("/type/most")
+	public List<PersonEntity> getPersonsForType(){
+		return service.getPersonsMostType();
+	}
+	
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
 		return new ResponseEntity<String>(e.getMessage(), HttpStatus.NOT_FOUND);
 	}
 	
-
+	@ExceptionHandler(NumberFormatException.class)
+	public ResponseEntity<String> handleNumberFormat(NumberFormatException e) {
+		return new ResponseEntity<String>("cannot convet number :"+e.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+	
+	
 }
