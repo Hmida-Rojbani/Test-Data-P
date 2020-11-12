@@ -72,13 +72,13 @@ public class PersonServiceImpl {
 		List<GamesEntity> games = personRequest.getGames();
 		List<GamesEntity> gamesInBase = reposGame.findAll();
 		for (GamesEntity game : games) {
-			if(gamesInBase.contains(game)) {
+			if (gamesInBase.contains(game)) {
 				int indexOfGameInList = gamesInBase.indexOf(game);
 				GamesEntity gameInbase = gamesInBase.get(indexOfGameInList);
 				// add the new person to the existing list of persons
 				gameInbase.getPersons().add(personInBase);
 				reposGame.save(gameInbase);
-			}else {
+			} else {
 				// save game for the first time
 				game.setPersons(Arrays.asList(personInBase));
 				reposGame.save(game);
@@ -126,7 +126,7 @@ public class PersonServiceImpl {
 			}
 		}
 
-		//  Update phone
+		// Update phone
 		List<TelephoneNumberEntity> oldPhones = oldPerson.getPhones();
 		List<TelephoneNumberEntity> newPhones = newPerson.getPhones();
 		if (newPhones != null) {
@@ -145,20 +145,19 @@ public class PersonServiceImpl {
 		// TODO Update Games
 		List<GamesEntity> oldGames = oldPerson.getGames();
 		List<GamesEntity> newGames = newPerson.getGames();
-		if(newGames != null) {
+		if (newGames != null) {
 			for (GamesEntity newGame : newGames) {
 				for (GamesEntity oldGame : oldGames) {
-					if(newGame.getId()==oldGame.getId()) {
-						if(newGame.getTitle() != null)
+					if (newGame.getId() == oldGame.getId()) {
+						if (newGame.getTitle() != null)
 							oldGame.setTitle(newGame.getTitle());
-						if(newGame.getType() != null)
+						if (newGame.getType() != null)
 							oldGame.setType(newGame.getType());
 					}
 				}
 			}
 		}
-		
-		
+
 		return reposPerson.save(oldPerson);
 	}
 
@@ -168,69 +167,57 @@ public class PersonServiceImpl {
 		reposPerson.deleteById(id);
 		return oldPerson;
 	}
-	
+
 	// All person with a given operator
-	public List<PersonEntity> getAllByOperator(String operator){
+	public List<PersonEntity> getAllByOperator(String operator) {
 		// version 1 simple
 		/*
-		Set<PersonEntity> persons = new HashSet<>();
-		List<TelephoneNumberEntity> phones = reposPhone.findAll();
-		
-		for (TelephoneNumberEntity phone : phones) {
-			if(phone.getOperator().equalsIgnoreCase(operator)) {
-				// persons is List
-				// if(! persons.contains(phone.getPerson())) {
-				//	persons.add(phone.getPerson());
-				//}
-				 
-				persons.add(phone.getPerson());
-			}
-		}	
-		
-		return new ArrayList<>(persons);
-		*/
+		 * Set<PersonEntity> persons = new HashSet<>(); List<TelephoneNumberEntity>
+		 * phones = reposPhone.findAll();
+		 * 
+		 * for (TelephoneNumberEntity phone : phones) {
+		 * if(phone.getOperator().equalsIgnoreCase(operator)) { // persons is List //
+		 * if(! persons.contains(phone.getPerson())) { //
+		 * persons.add(phone.getPerson()); //}
+		 * 
+		 * persons.add(phone.getPerson()); } }
+		 * 
+		 * return new ArrayList<>(persons);
+		 */
 		// Version 2 ( Java 8)
-		List<PersonEntity> persons = 
-				reposPhone.findAll()
-						.stream()
-						.filter(phone -> phone.getOperator().equalsIgnoreCase(operator))
-						.map(phone -> phone.getPerson())
-						.distinct()
-						.collect(Collectors.toList());
-												
-		
-		return persons ;
+		List<PersonEntity> persons = reposPhone.findAll().stream()
+				.filter(phone -> phone.getOperator().equalsIgnoreCase(operator)).map(phone -> phone.getPerson())
+				.distinct().collect(Collectors.toList());
+
+		return persons;
 	}
-	
+
 	// Average age of all Persons
 	public double getAverageAge() {
 		List<PersonEntity> persons = reposPerson.findAll();
-		
+
 		LocalDate now = LocalDate.now();
-		/*double sum = 0;
-		 * for (PersonEntity person : persons) {
-			//sum += now.getYear() - person.getDateOfBirth().getYear();
-			sum += ChronoUnit.YEARS.between(person.getDateOfBirth(), now);
-		}
-		
-		return sum/persons.size();
-		*/
+		/*
+		 * double sum = 0; for (PersonEntity person : persons) { //sum += now.getYear()
+		 * - person.getDateOfBirth().getYear(); sum +=
+		 * ChronoUnit.YEARS.between(person.getDateOfBirth(), now); }
+		 * 
+		 * return sum/persons.size();
+		 */
 		// Java 8
-		double average = persons.stream()
-				.mapToLong(p ->  ChronoUnit.YEARS.between(p.getDateOfBirth(), now))
-				.average().orElse(0);
-				
-				
+		double average = persons.stream().mapToLong(p -> ChronoUnit.YEARS.between(p.getDateOfBirth(), now)).average()
+				.orElse(0);
+
 		return average;
 	}
-	
-	//Persons who play the type of game the most played.
-	public List<PersonEntity> getPersonsMostType(){
+
+	// Persons who play the type of game the most played.
+	public List<PersonEntity> getPersonsMostType() {
 		Map<String, Set<PersonEntity>> map = new HashMap<>();
 		List<GamesEntity> games = reposGame.findAll();
 		for (GamesEntity game : games) {
 			if (map.containsKey(game.getType())) {
-				Set<PersonEntity> personsByType =map.get(game.getType());
+				Set<PersonEntity> personsByType = map.get(game.getType());
 				personsByType.addAll(game.getPersons());
 			} else {
 				map.put(game.getType(), new HashSet<>(game.getPersons()));
@@ -238,15 +225,14 @@ public class PersonServiceImpl {
 		}
 		List<PersonEntity> persons = new ArrayList<>();
 		for (Set<PersonEntity> set : map.values()) {
-			if(persons.size() < set.size())
+			if (persons.size() < set.size())
 				persons = new ArrayList<>(set);
 		}
 		return persons;
 	}
-	
 
 	// Display the games type and the number of games for each type;
-	public List<GameType> getTypeAndNumber(){
+	public List<GameType> getTypeAndNumber() {
 		List<GamesEntity> games = reposGame.findAll();
 		List<GameType> gamesType = new ArrayList<>();
 		for (GamesEntity game : games) {
@@ -260,7 +246,15 @@ public class PersonServiceImpl {
 		}
 		return gamesType;
 	}
-	
-	// return a person by name 
+
+	// return a person by name
+	public PersonEntity getByName(String name) {
+		for (PersonEntity person : reposPerson.findAll()) {
+			if (person.getName().equalsIgnoreCase(name))
+				return person;
+		}
+		
+		throw new NoSuchElementException("Person with this name is not found");
+	}
 
 }
