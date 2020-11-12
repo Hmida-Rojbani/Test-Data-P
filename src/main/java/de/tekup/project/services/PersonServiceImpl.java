@@ -26,6 +26,7 @@ import de.tekup.project.data.repositories.AddressRepository;
 import de.tekup.project.data.repositories.GameRepository;
 import de.tekup.project.data.repositories.PersonRepository;
 import de.tekup.project.data.repositories.TelephoneNumberRepository;
+import de.tekup.project.dto.GameType;
 
 @Service
 public class PersonServiceImpl {
@@ -245,6 +246,20 @@ public class PersonServiceImpl {
 	
 
 	// Display the games type and the number of games for each type;
+	public List<GameType> getTypeAndNumber(){
+		List<GamesEntity> games = reposGame.findAll();
+		List<GameType> gamesType = new ArrayList<>();
+		for (GamesEntity game : games) {
+			GameType gameType = new GameType(game.getType(), 1);
+			if (gamesType.contains(gameType)) {
+				int index = gamesType.indexOf(gameType);
+				gamesType.get(index).increment();
+			} else {
+				gamesType.add(gameType);
+			}
+		}
+		return gamesType;
+	}
 	
 	// return a person by name 
 

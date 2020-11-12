@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import de.tekup.project.data.models.PersonEntity;
+import de.tekup.project.dto.GameType;
 import de.tekup.project.services.PersonServiceImpl;
 
 @RestController
@@ -69,6 +70,11 @@ public class PersonRest {
 	@GetMapping("/type/most")
 	public List<PersonEntity> getPersonsForType(){
 		return service.getPersonsMostType();
+	}
+	
+	@GetMapping("/type/number")
+	public List<GameType> getGameTypeAndNumber(){
+		return service.getTypeAndNumber();
 	}
 	
 	@ExceptionHandler(NoSuchElementException.class)
