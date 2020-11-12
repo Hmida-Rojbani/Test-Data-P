@@ -249,12 +249,16 @@ public class PersonServiceImpl {
 
 	// return a person by name
 	public PersonEntity getByName(String name) {
-		for (PersonEntity person : reposPerson.findAll()) {
+		/*for (PersonEntity person : reposPerson.findAll()) {
 			if (person.getName().equalsIgnoreCase(name))
 				return person;
+			
 		}
-		
 		throw new NoSuchElementException("Person with this name is not found");
+		*/
+		PersonEntity person = reposPerson.getName(name)
+				.orElseThrow(()->new NoSuchElementException("Person with this name is not found"));
+		return person;
 	}
 
 }
