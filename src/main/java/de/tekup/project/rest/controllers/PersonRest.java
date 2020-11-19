@@ -3,6 +3,9 @@ package de.tekup.project.rest.controllers;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import javax.validation.Valid;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.tekup.project.data.models.PersonEntity;
 import de.tekup.project.dto.GameType;
+import de.tekup.project.dto.PersonRequest;
+import de.tekup.project.dto.SimplePerson;
 import de.tekup.project.services.PersonServiceImpl;
 
 @RestController
@@ -25,6 +30,7 @@ import de.tekup.project.services.PersonServiceImpl;
 public class PersonRest {
 	
 	private PersonServiceImpl service;
+	private ModelMapper mapper = new ModelMapper();
 	
 	@Autowired
 	public PersonRest(PersonServiceImpl service) {
@@ -43,14 +49,18 @@ public class PersonRest {
 	}
 	
 	@GetMapping("/{id}")
-	public PersonEntity getById(@PathVariable("id") long id){
-		return service.getPersonById(id);
+	public SimplePerson getById(@PathVariable("id") long id){
+		//PersonEntity person = service.getPersonById(id);
+		//return new SimplePerson(person.getId(), person.getName(), person.getDateOfBirth());
+		return mapper.map(service.getPersonById(id), SimplePerson.class);
 	}
 	
 	@PutMapping("/{id}")
-	public PersonEntity modifyPerson(@PathVariable("id") long id, @RequestBody PersonEntity personRequest) {
-		return service.modifyPersonById(id, personRequest);
-	}
+	public SimplePerson modifyPerson(@PathVariable("id") long id,@Valid @RequestBody PersonRequest personRequest) {
+		PersonEntity person = mapper.map(personRequest, PersonEntity.class);
+		person = service.modifyPersonById(id, person);
+		return mapper.map(person, SimplePerson.class);
+	} 
 	
 	@DeleteMapping("/{id}")
 	public PersonEntity deleteById(@PathVariable("id") long id){

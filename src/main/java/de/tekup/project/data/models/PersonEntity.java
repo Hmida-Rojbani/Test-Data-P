@@ -45,5 +45,13 @@ public class PersonEntity {
 	@ManyToMany(mappedBy = "persons",cascade = CascadeType.REMOVE)
 	List<GamesEntity> games;
 	
+	public int getAge() {
+		return LocalDate.now().getYear()-dateOfBirth.getYear();
+	}
+	
+	public String getPersonAddress() {
+		return address.getNumber()+", "+address.getStreet()+", "
+				+address.getCity()+".";
+	}
 
 }
